@@ -15,17 +15,15 @@ class ExceptionSubscriber implements EventSubscriberInterface
         $exception = $event->getThrowable();
 
         if ($exception instanceof HttpException) {
-            $data = [
+            $event->setResponse(new JsonResponse([
                 'status' => $exception->getStatusCode(),
                 'message' => $exception->getMessage()
-            ];
-            $event->setResponse(new JsonResponse($data, $exception->getStatusCode()));
+            ], $exception->getStatusCode()));
         } else {
-            $data = [
-                'status' => 500, // Ce n'est pas une exception HTTP, on met 500 par défaut
+            $event->setResponse(new JsonResponse([
+                'status' => 500,
                 'message' => $exception->getMessage()
-            ];
-            $event->setResponse(new JsonResponse($data, 500));
+            ], 500));
         }
     }
 
